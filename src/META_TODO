@@ -1,0 +1,5 @@
+ // all to do goes here
+
+1. clean up all files by moving macro defs and typedefs into common files and headers
+2. Write Makefile
+3. 
