@@ -12,7 +12,6 @@
 
 #define ERROR -1
 #define INVALID ERROR
-#define FAILURE ERROR
 #define UNDEF ERROR
 
 #define BUF_LEN 256

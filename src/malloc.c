@@ -12,6 +12,7 @@
 #define ALLOCATED_BLOCK 0
 
 #include "../include/common.h"
+#include "../include/commonFunctions.h"
 #include <assert.h>
 
 /*
@@ -39,21 +40,21 @@ typedef struct BlockMetaData{
 
 void *head = NULL;
 
-BlockMeta requestToOperatingSystem(size_t size)
+void*  requestToOperatingSystem(size_t size)
 {
 	/*refer to man page for sbrk */
 	size_t requestSize = size + BLOCK_META_SIZE;
-	presentBreak = sbrk(0);
-	allocatedBlock = sbrk(requestSize);
+	void *presentBreak = sbrk(0);
+	void *allocatedBlock = sbrk((intptr_t)requestSize);
 	if((void*)-1 == allocatedBlock)
 		return NULL;
-	presentBreak -> block_size = requestSize;
-	presentBreak -> status = ALLOCATED_BLOCK;
-	presentBreak -> next = NULL;
+	((BlockMeta *)presentBreak)->block_size = requestSize;
+	((BlockMeta *)presentBreak)->status = ALLOCATED_BLOCK;
+	((BlockMeta *)presentBreak)->next = NULL;
 	return(presentBreak);
 }
 
-void* malloc(size_t size)
+void* u_malloc(size_t size)
 {
 	assert(size > 0);
 	if(NULL == head){ /* this is the first request since program start*/
@@ -61,7 +62,12 @@ void* malloc(size_t size)
 		return(head);
 	}
 	else{
-		//allocate and do other stuff tomorrow 
+		BlockMeta *last_block = head;
+		while(NULL != last_block->next)
+			last_block = last_block->next;
+		last_block->next = requestToOperatingSystem(size);
+		return((void *)last_block->next);
+
 	}
 }
 
