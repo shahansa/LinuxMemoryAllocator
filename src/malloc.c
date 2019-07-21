@@ -16,7 +16,7 @@
 #include <assert.h>
 
 /*
-+----------------+-------------------------------------++
++----------------+-------------------------------------+
 |free?  |pointer |                                     |
 +----------------+                                     |
 | Block Meta data|  Actual memory block                |
@@ -40,9 +40,23 @@ typedef struct BlockMetaData{
 
 void *head = NULL;
 
+BlockMeta* findCompatibleBlock(BlockMeta *head, size_t request_size)
+{
+	assert(head != NULL);
+	assert(request_size > 0);
+	BlockMeta *temp = head;
+	while(temp->status != ALLOCATED_BLOCK && NULL != temp){
+		if(temp->block_size <= request_size)
+			return(temp+1);
+		temp = temp->next;
+	}
+	return(temp);
+}
+
 void*  requestToOperatingSystem(size_t size)
 {
 	/*refer to man page for sbrk */
+	//TODO : see if size is greater than threshold to use mmap
 	size_t requestSize = size + BLOCK_META_SIZE;
 	void *presentBreak = sbrk(0);
 	void *allocatedBlock = sbrk((intptr_t)requestSize);
@@ -57,18 +71,26 @@ void*  requestToOperatingSystem(size_t size)
 void* u_malloc(size_t size)
 {
 	assert(size > 0);
+	BlockMeta *block = NULL;
 	if(NULL == head){ /* this is the first request since program start*/
 		head = requestToOperatingSystem(size);
-		return(head);
+		block = head;
 	}
 	else{
-		BlockMeta *last_block = head;
-		while(NULL != last_block->next)
-			last_block = last_block->next;
-		last_block->next = requestToOperatingSystem(size);
-		return((void *)last_block->next);
-
+		BlockMeta *compatibleBlock = NULL;
+		compatibleBlock = findCompatibleBlock(head, size);
+		if(NULL != compatibleBlock){
+			block = compatibleBlock;
+		}
+		else{
+			BlockMeta *last_block = head;
+			while(NULL != last_block->next)
+				last_block = last_block->next;
+			block = requestToOperatingSystem(size);
+			last_block->next = block;
+		}
 	}
+	return(block+1);
 }
 
 

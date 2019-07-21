@@ -13,8 +13,12 @@
 int main()
 {
 	void *ptr;
-	ptr = u_malloc(1024);
-	if(NULL == ptr)
-		 printf("malloc failed");
+	int i;
+	for(i = 1; i < 10; i++)
+	{
+		ptr = u_malloc(i*1024);
+		if(NULL == ptr)
+			 printf("malloc failed");
+	}
 	return 0;	
 }
