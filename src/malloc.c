@@ -10,6 +10,7 @@
 
 #define FREE_BLOCK -1
 #define ALLOCATED_BLOCK 0
+#define DEBUG_LEVEL_1
 
 #include "../include/common.h"
 #include "../include/commonFunctions.h"
@@ -42,29 +43,53 @@ void *head = NULL;
 
 BlockMeta* findCompatibleBlock(BlockMeta *head, size_t request_size)
 {
+#ifdef DEBUG_LEVEL_1
+	printf("\nin function %s ,line %d",__func__, __LINE__ );
+	printf("\nRequest to find block for %ld Bytes",request_size);
+#endif
 	assert(head != NULL);
 	assert(request_size > 0);
 	BlockMeta *temp = head;
-	while(temp->status != ALLOCATED_BLOCK && NULL != temp){
-		if(temp->block_size <= request_size)
-			return(temp+1);
+	while(NULL != temp){
+		if(temp->block_size >= request_size && temp->status != ALLOCATED_BLOCK){
+#ifdef DEBUG_LEVEL_1
+			printf("\nReturn from function %s value %ld",__func__, temp);
+#endif
+			return(temp);
+		}
 		temp = temp->next;
 	}
-	return(temp);
+#ifdef DEBUG_LEVEL_1
+	printf("\nReturn from function %s value NULL",__func__);
+#endif
+	return(NULL);
+	
 }
 
 void*  requestToOperatingSystem(size_t size)
 {
 	/*refer to man page for sbrk */
 	//TODO : see if size is greater than threshold to use mmap
+#ifdef DEBUG_LEVEL_1
+	printf("\nin function %s",__func__);
+	printf("\nrequest to allocate %ld Bytes",size);
+#endif
 	size_t requestSize = size + BLOCK_META_SIZE;
-	void *presentBreak = sbrk(0);
+	BlockMeta *presentBreak = sbrk(0);
 	void *allocatedBlock = sbrk((intptr_t)requestSize);
-	if((void*)-1 == allocatedBlock)
+	assert((void *)presentBreak == allocatedBlock);
+	if((void*)-1 == allocatedBlock){
+#ifdef DEBUG_LEVEL_1
+	printf("\nReturn from function %s value NULL",__func__);
+#endif
 		return NULL;
-	((BlockMeta *)presentBreak)->block_size = requestSize;
-	((BlockMeta *)presentBreak)->status = ALLOCATED_BLOCK;
-	((BlockMeta *)presentBreak)->next = NULL;
+	}
+	presentBreak->block_size = requestSize;
+	presentBreak->status = ALLOCATED_BLOCK;
+	presentBreak->next = NULL;
+#ifdef DEBUG_LEVEL_1
+	printf("\nReturn from function %s value %ld", __func__, presentBreak);
+#endif
 	return(presentBreak);
 }
 
@@ -81,6 +106,7 @@ void* u_malloc(size_t size)
 		compatibleBlock = findCompatibleBlock(head, size);
 		if(NULL != compatibleBlock){
 			block = compatibleBlock;
+			block->status = ALLOCATED_BLOCK;
 		}
 		else{
 			BlockMeta *last_block = head;
@@ -88,10 +114,16 @@ void* u_malloc(size_t size)
 				last_block = last_block->next;
 			block = requestToOperatingSystem(size);
 			last_block->next = block;
+			block->status = ALLOCATED_BLOCK;
 		}
 	}
 	return(block+1);
 }
 
-
+void u_free(void *memptr)
+{
+	BlockMeta *ptr = (BlockMeta*)memptr;
+	BlockMeta *block_ptr = ptr-1;
+	block_ptr->status = FREE_BLOCK;
+}
 	

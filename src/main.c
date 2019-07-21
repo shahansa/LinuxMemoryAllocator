@@ -12,13 +12,19 @@
 
 int main()
 {
-	void *ptr;
+	void *ptr[10];
 	int i;
-	for(i = 1; i < 10; i++)
+	for(i = 1; i <= 10; i++)
 	{
-		ptr = u_malloc(i*1024);
+		ptr[i] = u_malloc(i*1024);
 		if(NULL == ptr)
 			 printf("malloc failed");
 	}
+	u_free(ptr[5]);
+	u_free(ptr[2]);
+	void *ptri = u_malloc(1024);
+	void *ptr2 = u_malloc(2048);
+
+		
 	return 0;	
 }
