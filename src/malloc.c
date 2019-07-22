@@ -250,6 +250,16 @@ void* u_malloc(size_t size)
 	return (void*)(block+1);
 }
 
+void * u_calloc(size_t nmemb, size_t size)
+{
+	size_t alloc_size = nmemb * size;
+	void *mem_ptr = u_malloc(alloc_size);
+	if(NULL == mem_ptr)
+		return(NULL);
+	memset(mem_ptr, 0, size);
+	return(mem_ptr);
+}
+
 
 void* u_realloc(void *data, size_t newSize){
 	#ifdef DEBUG_LEVEL_1
