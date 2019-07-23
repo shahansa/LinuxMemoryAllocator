@@ -4,14 +4,12 @@
  * acknowledgements:
  * date modified :
  */
-
-
-
 #include "../include/common.h"
 #include "../include/commonFunctions.h"
 
 int main()
 {
+	printf("In Function: %s ,line %d\n",__func__, __LINE__ );
 	void *ptr[10];
 	int i;
 	for(i = 1; i <= 10; i++)
@@ -20,11 +18,9 @@ int main()
 		if(NULL == ptr)
 			 printf("malloc failed");
 	}
+	travers_and_print();
 	u_free(ptr[5]);
-	u_free(ptr[2]);
-	void *ptri = u_malloc(1024);
-	void *ptr2 = u_malloc(2048);
-
-		
+	u_free(ptr[2]);	
+	printf("Outside Function: %s ,line %d\n",__func__, __LINE__ );
 	return 0;	
 }
