@@ -2,6 +2,7 @@
 
 void* u_malloc(size_t size);
 void u_free(void *memptr);
+void* u_calloc(size_t nmemb, size_t size);
 void split(BlockMeta*, size_t);
 int max(int, int);
 BlockMeta* findCompatibleBlock_first_fit(BlockMeta*, size_t);

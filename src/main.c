@@ -14,7 +14,7 @@ int main()
 	int i;
 	for(i = 1; i <= 10; i++)
 	{
-		ptr[i] = u_malloc(i*1024);
+		ptr[i] = u_malloc(i*1024 * 128);
 		if(NULL == ptr)
 			 printf("malloc failed");
 	}
@@ -22,5 +22,7 @@ int main()
 	u_free(ptr[5]);
 	u_free(ptr[2]);	
 	printf("Outside Function: %s ,line %d\n",__func__, __LINE__ );
+	u_malloc(128 *1024);
+	u_malloc(4*128*1024);
 	return 0;	
 }
