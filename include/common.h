@@ -22,6 +22,22 @@
 #define SUCCESS 0
 #define FAILURE 1
 
+typedef struct BlockMetaData{
+	size_t block_size;
+	struct BlockMetaData *next;
+	int status;
+}BlockMeta;
+
+
+/* Macros */
+#define BLOCK_META_SIZE sizeof(BlockMeta)
+#define DEFAULT_ALLOC_SIZE 1 * sysconf(_SC_PAGESIZE)
+#define UNUSABLE_MEMORY_SIZE 8 + BLOCK_META_SIZE
+#define FREE_BLOCK 1
+#define ALLOCATED_BLOCK 0
+#define DEBUG_LEVEL_1
+#define BLOCK_MEM(ptr) ((void *)((unsigned long)ptr + sizeof(BlockMeta)))
+#define BLOCK_HEADER(ptr) ((void *)((unsigned long)ptr - sizeof(BlockMeta)))
 
 #ifndef MAX
 #define MAX(a,b) (((a)>(b))?(a):(b))
