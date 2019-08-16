@@ -301,9 +301,9 @@ void split(BlockMeta *before_split, size_t size)
  */
 void* u_malloc(size_t size)
 {
-	#ifdef DEBUG_LEVEL_1
+#ifdef DEBUG_LEVEL_1
 	printf("In Function: %s\n",__func__);
-	#endif
+#endif
 	if(size <= 0)
 		return(NULL);
 	if(size < DEFAULT_MMAP_THRESHOLD){
@@ -335,6 +335,9 @@ void* u_malloc(size_t size)
 				block->status = ALLOCATED_BLOCK;
 			}
 		}
+#ifdef DEBUG_LEVEL_2
+	travers_and_print();
+#endif
 	return (void*)(block+1);
 	}
 	else{
@@ -364,6 +367,9 @@ void* u_malloc(size_t size)
 			}
 		}
 
+#ifdef DEBUG_LEVEL_2
+	travers_and_print();
+#endif
 	return(void *)(zone+1);
 	}
 }

@@ -18,7 +18,7 @@ int main()
 		if(NULL == ptr)
 			 printf("malloc failed");
 	}
-	travers_and_print();
+	//travers_and_print();
 	u_free(ptr[5]);
 	u_free(ptr[2]);	
 	printf("Outside Function: %s ,line %d\n",__func__, __LINE__ );

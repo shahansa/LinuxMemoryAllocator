@@ -46,7 +46,6 @@ typedef struct zoneinfo{
 #define ALLOCATED_BLOCK 0
 #define ALLOCATED_ZONE 0
 #define FREE ZONE 1
-#define DEBUG_LEVEL_1
 #define BLOCK_MEM(ptr) ((void *)((unsigned long)ptr + sizeof(BlockMeta)))
 #define BLOCK_HEADER(ptr) ((void *)((unsigned long)ptr - sizeof(BlockMeta)))
 #define DEFAULT_MMAP_THRESHOLD_MIN (128 * 1024)
